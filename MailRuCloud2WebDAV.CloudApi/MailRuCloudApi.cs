@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MailRuCloud2WebDAV.CloudApi
 {
     public class MailRuCloudApi : IDisposable
     {
-        private Dispatcher _dispatcherClient;
+        private DispatcherApi _dispatcherClient;
         private Auth _authClient;
         private HttpClientHandler _httpClientHandler;
 
@@ -33,28 +29,22 @@ namespace MailRuCloud2WebDAV.CloudApi
                 MaxRequestContentBufferSize = int.MaxValue
             };
 
-            _dispatcherClient = new Dispatcher(_httpClientHandler, _cts);
+            _dispatcherClient = new DispatcherApi(_httpClientHandler, _cts);
             _authClient = new Auth(_httpClientHandler, _cts, _dispatcherClient);
-
         }
 
-
-        public string DispatcherM()
+        public bool Auth(string username, string password)
         {
-            while (!_authClient.Login("safds@mail.ru", "afsdfsadf"))
-            {
-                Thread.Sleep(1000);
-            }
-            var s = _authClient.Token;
-            _authClient.Login("safds@mail.ru", "afsdfsadf");
-            s = _authClient.Token;
-            s = _authClient.Token;
-            s = _authClient.Token;
-            s = _authClient.Token;
-            return s;
+            if (_disposed) throw new ObjectDisposedException("MailRuCloudApi");
+            return _authClient.Login(username, password);
         }
 
+        public bool Test()
+        {
+            if (_disposed) throw new ObjectDisposedException("MailRuCloudApi");
 
+            return false;
+        }
 
         public void Dispose()
         {
@@ -71,8 +61,9 @@ namespace MailRuCloud2WebDAV.CloudApi
             {
                 _cts.Cancel();
 
-                _dispatcherClient?.Dispose();
+                _authClient.Dispose();
 
+                _dispatcherClient?.Dispose();
                 _httpClientHandler?.Dispose();
             }
         }

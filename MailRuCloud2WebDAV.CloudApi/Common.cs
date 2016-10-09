@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,10 +36,46 @@ namespace MailRuCloud2WebDAV.CloudApi
             if (t < 0) t = 0;
             return int.MinValue + (int)t;
         }
+
+        internal static bool CheckTick(int expiresIn)
+        {
+            var currTick = Environment.TickCount;
+            if ((currTick > 0 && expiresIn > 0) || (currTick < 0 && expiresIn < 0))
+            {
+                if (expiresIn - currTick < 0) return true;
+            }
+            else if (currTick < 0 && expiresIn > 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 
-    internal class CustomDelay
+    [DataContract]
+    public class ErrorAuthApiResponse
     {
-        internal int Delay;
+        [DataMember(Name = "error")]
+        public string Error;
+        [DataMember(Name = "error_code")]
+        public int ErrorCode;
+        [DataMember(Name = "error_description")]
+        public string ErrorDescription;
+    }
+
+    [DataContract]
+    public class AuthApiResponse
+    {
+        [DataMember(Name = "expires_in")]
+        public int ExpiresIn;
+        [DataMember(Name = "refresh_token")]
+        public string RefreshToken;
+        [DataMember(Name = "access_token")]
+        public string AccessToken;
+    }
+
+    public class CustomDelay
+    {
+        public int Delay;
     }
 }

@@ -12,7 +12,8 @@ namespace MailRuCloud2WebDAV
         static void Main(string[] args)
         {
             var t = new MailRuCloudApi();
-            var s = t.DispatcherM();
+            var s = t.Auth("test@mail.ru", "test");
+            var k=t.Test();
         }
     }
 }

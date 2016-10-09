@@ -41,9 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseApiObject.cs" />
     <Compile Include="Auth.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Dispatcher.cs" />
+    <Compile Include="DispatcherApi.cs" />
     <Compile Include="MailRuCloudApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

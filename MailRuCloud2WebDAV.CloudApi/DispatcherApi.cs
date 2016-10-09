@@ -1,38 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MailRuCloud2WebDAV.CloudApi
 {
-    internal class Dispatcher : IDisposable
+    internal class DispatcherApi : IDisposable
     {
-        public string AuthUrl
+        //w-weblink
+        //e-video
+        //r-reginfo
+        //t-thumb
+        //y-dwl
+        //u-upload
+        //a-auth(swa)
+        //s-s.mail.ru(screenshoter?)
+        //d-oauth-get
+        //z-docdl
+        //x-dmeta
+        //v-view
+        //n-notify
+        internal string AuthUrl
         {
             get
             {
                 if (_disposed) throw new ObjectDisposedException("Dispatcher");
-
-                var currTick = Environment.TickCount;
-                if ((currTick > 0 && _expiresAuthUrlIn > 0) || (currTick < 0 && _expiresAuthUrlIn < 0))
-                {
-                    if (_expiresAuthUrlIn - currTick < 0) RefreshAuthUrl();
-                }
-                else if (currTick < 0 && _expiresAuthUrlIn > 0)
-                {
-                    RefreshAuthUrl();
-                }
-
+                if (Common.CheckTick(_expiresAuthUrlIn)) RefreshAuthUrl();
                 return _authUrl;
             }
         }
-
         private int _expiresAuthUrlIn;
         private string _authUrl;
+
+        internal string MetaUrl
+        {
+            get
+            {
+                if (_disposed) throw new ObjectDisposedException("Dispatcher");
+                if (Common.CheckTick(_expiresMetaUrlIn)) RefreshMetaUrl();
+                return _metaUrl;
+            }
+        }
+        private int _expiresMetaUrlIn;
+        private string _metaUrl;
 
         private const string _dispatcherUrl = "https://dispatcher.cloud.mail.ru";
         private const int _dispatcherRefreshPeriod = 15 * 60 * 1000;
@@ -42,7 +52,7 @@ namespace MailRuCloud2WebDAV.CloudApi
         private CancellationTokenSource _cts;
         private bool _disposed;
 
-        internal Dispatcher(HttpMessageHandler httpMessageHandler, CancellationTokenSource cts)
+        internal DispatcherApi(HttpMessageHandler httpMessageHandler, CancellationTokenSource cts)
         {
             _cts = cts;
 
@@ -50,6 +60,7 @@ namespace MailRuCloud2WebDAV.CloudApi
             _client.DefaultRequestHeaders.Add(Common.UserAgent, Common.UserAgentString);
 
             RefreshAuthUrl();
+            RefreshMetaUrl();
         }
 
         private void RefreshAuthUrl()
@@ -60,6 +71,22 @@ namespace MailRuCloud2WebDAV.CloudApi
                 {
                     _authUrl = ParseResponse(responseMsg.Content.ReadAsStringAsync().Result);
                     _expiresAuthUrlIn = Common.GetNextTickCount(_dispatcherRefreshPeriod);
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception);
+            }
+        }
+
+        private void RefreshMetaUrl()
+        {
+            try
+            {
+                using (var responseMsg = _client.GetAsync("m", _cts.Token).Result)
+                {
+                    _metaUrl = ParseResponse(responseMsg.Content.ReadAsStringAsync().Result);
+                    _expiresMetaUrlIn = Common.GetNextTickCount(_dispatcherRefreshPeriod);
                 }
             }
             catch (Exception exception)
