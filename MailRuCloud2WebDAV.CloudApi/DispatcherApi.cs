@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 
 namespace MailRuCloud2WebDAV.CloudApi
@@ -58,6 +59,7 @@ namespace MailRuCloud2WebDAV.CloudApi
 
             _client = new HttpClient(httpMessageHandler, false) { BaseAddress = new Uri(_dispatcherUrl) };
             _client.DefaultRequestHeaders.Add(Common.UserAgent, Common.UserAgentString);
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
             RefreshAuthUrl();
             RefreshMetaUrl();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 
 namespace MailRuCloud2WebDAV.CloudApi
@@ -23,6 +24,7 @@ namespace MailRuCloud2WebDAV.CloudApi
             Dispatcher = dispatcher;
             _httpMessageHandler = httpMessageHandler;
             _inWorkLock = new object();
+            //Client = null;
             CreateClient();
         }
 
@@ -30,7 +32,13 @@ namespace MailRuCloud2WebDAV.CloudApi
         {
             Client = new HttpClient(_httpMessageHandler, false);
             Client.DefaultRequestHeaders.Add(Common.UserAgent, Common.UserAgentString);
+            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+            //AfterCreateClient();
         }
+
+        //protected virtual void AfterCreateClient()
+        //{
+        //}
 
         protected void SafeIncInWork()
         {
@@ -48,6 +56,8 @@ namespace MailRuCloud2WebDAV.CloudApi
 
         protected bool RefreshUrlIfNeed(string url)
         {
+            //if (Client == null) CreateClient();
+
             if (url == null) return false;
 
             if (Client.BaseAddress == null)

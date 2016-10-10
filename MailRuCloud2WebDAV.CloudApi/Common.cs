@@ -10,6 +10,11 @@ namespace MailRuCloud2WebDAV.CloudApi
         internal const string UserAgent = "User-Agent";
         internal const string UserAgentString = "CloudDesktopWindows 15.06.0409 beta 57f68b47";
 
+        internal const string ClientId = "client_id";
+        internal const string ClientIdString = "cloud-win";
+
+        internal const string ApplicationXwwwFormUrlencoded = "application/x-www-form-urlencoded";
+
         internal static async Task RunPeriodicTask(Action<object, CancellationToken> doWork, object taskState, int period, CancellationToken cancellationToken)
         {
             var customDelay = taskState as CustomDelay;

@@ -9,6 +9,7 @@ namespace MailRuCloud2WebDAV.CloudApi
     {
         private DispatcherApi _dispatcherClient;
         private Auth _authClient;
+        private MetaApi _metaClient;
         private HttpClientHandler _httpClientHandler;
 
         private bool _disposed;
@@ -31,6 +32,7 @@ namespace MailRuCloud2WebDAV.CloudApi
 
             _dispatcherClient = new DispatcherApi(_httpClientHandler, _cts);
             _authClient = new Auth(_httpClientHandler, _cts, _dispatcherClient);
+            _metaClient = new MetaApi(_httpClientHandler, _cts, _dispatcherClient, _authClient);
         }
 
         public bool Auth(string username, string password)
@@ -42,7 +44,7 @@ namespace MailRuCloud2WebDAV.CloudApi
         public bool Test()
         {
             if (_disposed) throw new ObjectDisposedException("MailRuCloudApi");
-
+            _metaClient.GetDirInfo();
             return false;
         }
 

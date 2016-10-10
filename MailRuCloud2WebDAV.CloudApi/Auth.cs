@@ -53,7 +53,7 @@ namespace MailRuCloud2WebDAV.CloudApi
 
                 using (var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("client_id", "cloud-win"),
+                    new KeyValuePair<string, string>(Common.ClientId, Common.ClientIdString),
                     new KeyValuePair<string, string>("grant_type", "refresh_token"),
                     new KeyValuePair<string, string>("refresh_token", _refreshToken)
                 }))
@@ -100,7 +100,7 @@ namespace MailRuCloud2WebDAV.CloudApi
 
                 using (var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("client_id", "cloud-win"),
+                    new KeyValuePair<string, string>(Common.ClientId, Common.ClientIdString),
                     new KeyValuePair<string, string>("grant_type", "password"),
                     new KeyValuePair<string, string>("username", username),
                     new KeyValuePair<string, string>("password", password)
