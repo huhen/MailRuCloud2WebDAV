@@ -14,7 +14,7 @@ namespace MailRuCloud2WebDAV
         {
             //var t = new MailRuCloudApi(new WebProxy("localhost", 8888));
             var t = new MailRuCloudApi();
-            var s = t.Auth("...@mail.ru", "...");
+            var s = t.Auth("autoscop@mail.ru", "baza-0000");
             var k = t.Test();
         }
     }

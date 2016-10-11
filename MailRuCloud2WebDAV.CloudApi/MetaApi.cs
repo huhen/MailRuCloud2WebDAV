@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security.Authentication;
+using System.Text;
 using System.Threading;
 using System.Web;
 
@@ -19,6 +20,23 @@ namespace MailRuCloud2WebDAV.CloudApi
         internal MetaApi(HttpMessageHandler httpMessageHandler, CancellationTokenSource cts, DispatcherApi dispatcher, Auth auth) : base(httpMessageHandler, cts, dispatcher)
         {
             _auth = auth;
+        }
+
+        private string GetUriString(string token)
+        {
+            return
+                $"?{Common.ClientId}={HttpUtility.UrlEncode(Common.ClientIdString)}&token={HttpUtility.UrlEncode(token)}";
+        }
+
+        private byte[] BuildRequestDir(string dir)
+        {
+            var b = Encoding.Default.GetBytes(dir);
+            using (var ms = new MemoryStream())
+            {
+                ms.WriteByte(0x75);
+
+                return ms.ToArray();
+            }
         }
 
         internal bool GetDirInfo()
@@ -38,12 +56,13 @@ namespace MailRuCloud2WebDAV.CloudApi
                 if (!RefreshUrlIfNeed(Dispatcher.MetaUrl)) return false;
 
                 byte[] arrOutput = { 0x75, 0x02, 0x2F, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x41, 0x00 };
+                var test = BuildRequestDir("/");
                 //byte[] arrOutput = { 0x75, 0x04, 0x74, 0x74, 0x74, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x41, 0x00 };
                 using (var content = new ByteArrayContent(arrOutput))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(Common.ApplicationXwwwFormUrlencoded);
 
-                    using (var response = Client.PostAsync($"?{Common.ClientId}={HttpUtility.UrlEncode(Common.ClientIdString)}&token={HttpUtility.UrlEncode(token)}", content, Cts.Token).Result)
+                    using (var response = Client.PostAsync(GetUriString(token), content, Cts.Token).Result)
                     {
                         if (!response.IsSuccessStatusCode)
                         {
