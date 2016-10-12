@@ -79,6 +79,13 @@ namespace MailRuCloud2WebDAV.CloudApi
         public string AccessToken;
     }
 
+    public class DirResponse
+    {
+        public byte Status;
+        public byte Status1;
+        public long Version;
+    }
+
     public class CustomDelay
     {
         public int Delay;
